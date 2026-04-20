@@ -8,9 +8,6 @@ python-jose
 pydantic
 pydantic-settings
 psycopg2-binary
-bcryptflask
-psycopg2-binary
-psycopg2-binary
 bcrypt
 pandas
 openpyxl
