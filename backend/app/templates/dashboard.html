@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SAF Dashboard</title>
+    <style>
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f4f6f9;
+            color: #1f2937;
+        }
+
+        .topbar {
+            background: #0f172a;
+            color: #ffffff;
+            padding: 18px 24px;
+            font-size: 24px;
+            font-weight: bold;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .usuario {
+            font-size: 14px;
+            font-weight: normal;
+        }
+
+        .usuario a {
+            color: #93c5fd;
+            text-decoration: none;
+            margin-left: 10px;
+        }
+
+        .menu {
+            background: #1e293b;
+            padding: 12px 24px;
+        }
+
+        .menu a {
+            color: #fff;
+            text-decoration: none;
+            margin-right: 20px;
+            font-weight: bold;
+        }
+
+        .container {
+            width: 95%;
+            margin: 24px auto;
+        }
+
+        .card {
+            background: #ffffff;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+        }
+
+        h1 {
+            margin-top: 0;
+            margin-bottom: 16px;
+            font-size: 24px;
+        }
+
+        .sub {
+            margin-bottom: 20px;
+            color: #475569;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: #ffffff;
+        }
+
+        th, td {
+            padding: 14px 12px;
+            text-align: left;
+            border-bottom: 1px solid #e5e7eb;
+            font-size: 14px;
+        }
+
+        th {
+            background: #e2e8f0;
+            color: #0f172a;
+            font-weight: bold;
+        }
+
+        tr:hover {
+            background: #f8fafc;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 6px 10px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: bold;
+            background: #22c55e;
+            color: #ffffff;
+        }
+
+        .btn {
+            border: none;
+            border-radius: 8px;
+            padding: 10px 14px;
+            cursor: pointer;
+            font-weight: bold;
+            color: white;
+        }
+
+        .btn-aprovar {
+            background: #16a34a;
+        }
+
+        .btn-reprovar {
+            background: #dc2626;
+            margin-left: 8px;
+        }
+
+        .empty {
+            padding: 18px;
+            border-radius: 10px;
+            background: #fff7ed;
+            color: #9a3412;
+            border: 1px solid #fdba74;
+        }
+
+        .codigo-link {
+            color: #2563eb;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .codigo-link:hover {
+            text-decoration: underline;
+        }
+
+        .sem-permissao {
+            color: #64748b;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <div class="topbar">
+        <div>SAF - Dashboard de Aprovações</div>
+        <div class="usuario">
+            {% if user %}
+                {{ user.nome }} ({{ user.perfil }})
+                <a href="/logout">Sair</a>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="menu">
+        {% if user and user.perfil in ["ADMIN", "SUPERVISOR", "COORDENADOR", "GERENTE", "DIRETOR"] %}
+            <a href="/dashboard">Aprovações</a>
+        {% endif %}
+
+        {% if user and user.perfil in ["ADMIN", "VENDAS", "ATENDENTE"] %}
+            <a href="/nova-saf">Nova SAF</a>
+        {% endif %}
+
+        {% if user and user.perfil in ["ADMIN", "SUPERVISOR", "ATENDENTE"] %}
+            <a href="/execucao">Execução</a>
+        {% endif %}
+    </div>
+
+    <div class="container">
+        <div class="card">
+            <h1>Próximas Aprovações</h1>
+            <div class="sub">Mostrando somente a próxima etapa pendente de cada SAF.</div>
+
+            {% if safs and safs|length > 0 %}
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Código SAF</th>
+                            <th>Tipo</th>
+                            <th>Status Atual</th>
+                            <th>Nível</th>
+                            <th>Status</th>
+                            <th>Ação</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for saf in safs %}
+                        <tr>
+                            <td>{{ saf.id }}</td>
+                            <td>
+                                <a class="codigo-link" href="/saf/{{ saf.id }}">
+                                    {{ saf.codigo_saf }}
+                                </a>
+                            </td>
+                            <td>{{ saf.tipo_solicitacao }}</td>
+                            <td>{{ saf.status_atual }}</td>
+                            <td>{{ saf.ordem_nivel }}</td>
+                            <td><span class="badge">{{ saf.status_aprovacao }}</span></td>
+                            <td>
+                                {% set pode_aprovar = false %}
+
+                                {% if user and user.perfil == 'COORDENADOR' and saf.ordem_nivel == 1 %}
+                                    {% set pode_aprovar = true %}
+                                {% elif user and user.perfil == 'GERENTE' and saf.ordem_nivel == 2 %}
+                                    {% set pode_aprovar = true %}
+                                {% elif user and user.perfil == 'DIRETOR' and saf.ordem_nivel == 3 %}
+                                    {% set pode_aprovar = true %}
+                                {% elif user and user.perfil == 'ADMIN' %}
+                                    {% set pode_aprovar = true %}
+                                {% endif %}
+
+                                {% if pode_aprovar %}
+                                    <button class="btn btn-aprovar"
+                                        onclick="aprovarSaf({{ saf.id }}, {{ saf.ordem_nivel }})">
+                                        Aprovar
+                                    </button>
+                                    <button class="btn btn-reprovar"
+                                        onclick="reprovarSaf({{ saf.id }}, {{ saf.ordem_nivel }})">
+                                        Reprovar
+                                    </button>
+                                {% else %}
+                                    <span class="sem-permissao">Sem permissão</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <div class="empty">
+                    Nenhuma SAF pendente encontrada no momento.
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <script>
+        async function aprovarSaf(safId, nivel) {
+            const usuarioId = Number("{{ user.id if user else 0 }}");
+            const nome = "{{ user.nome if user else '' }}";
+            const codigoMap = { 1: "ASS001", 2: "ASS002", 3: "ASS003" };
+
+            const payload = {
+                saf_id: safId,
+                nivel: nivel,
+                usuario_id: usuarioId,
+                nome: nome,
+                codigo: codigoMap[nivel],
+                status: "APROVADO"
+            };
+
+            const response = await fetch("/aprovacao/aprovar", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(payload)
+            });
+
+            if (response.ok) {
+                alert("Aprovação realizada com sucesso.");
+                window.location.reload();
+            } else {
+                const erro = await response.text();
+                alert("Erro ao aprovar: " + erro);
+            }
+        }
+
+        async function reprovarSaf(safId, nivel) {
+            const usuarioId = Number("{{ user.id if user else 0 }}");
+            const nome = "{{ user.nome if user else '' }}";
+            const codigoMap = { 1: "ASS001", 2: "ASS002", 3: "ASS003" };
+
+            const payload = {
+                saf_id: safId,
+                nivel: nivel,
+                usuario_id: usuarioId,
+                nome: nome,
+                codigo: codigoMap[nivel],
+                status: "REPROVADO"
+            };
+
+            const response = await fetch("/aprovacao/aprovar", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(payload)
+            });
+
+            if (response.ok) {
+                alert("Reprovação realizada com sucesso.");
+                window.location.reload();
+            } else {
+                const erro = await response.text();
+                alert("Erro ao reprovar: " + erro);
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SAF - Execução</title>
+    <style>
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f4f6f9;
+            color: #1f2937;
+        }
+
+        .topbar {
+            background: #0f172a;
+            color: #fff;
+            padding: 18px 24px;
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .menu {
+            background: #1e293b;
+            padding: 12px 24px;
+        }
+
+        .menu a {
+            color: #fff;
+            text-decoration: none;
+            margin-right: 20px;
+            font-weight: bold;
+        }
+
+        .container {
+            width: 95%;
+            margin: 24px auto;
+        }
+
+        .card {
+            background: #fff;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,.08);
+        }
+
+        h1 {
+            margin-top: 0;
+            margin-bottom: 16px;
+        }
+
+        .sub {
+            margin-bottom: 20px;
+            color: #475569;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: #fff;
+        }
+
+        th, td {
+            padding: 14px 12px;
+            text-align: left;
+            border-bottom: 1px solid #e5e7eb;
+            font-size: 14px;
+        }
+
+        th {
+            background: #e2e8f0;
+            color: #0f172a;
+            font-weight: bold;
+        }
+
+        tr:hover {
+            background: #f8fafc;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 6px 10px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: bold;
+            color: #fff;
+        }
+
+        .pendente { background: #f59e0b; }
+        .andamento { background: #2563eb; }
+        .concluido { background: #16a34a; }
+
+        .btn {
+            border: none;
+            border-radius: 8px;
+            padding: 10px 14px;
+            cursor: pointer;
+            font-weight: bold;
+            color: white;
+        }
+
+        .btn-iniciar {
+            background: #2563eb;
+        }
+
+        .btn-concluir {
+            background: #16a34a;
+            margin-left: 8px;
+        }
+
+        .empty {
+            padding: 18px;
+            border-radius: 10px;
+            background: #fff7ed;
+            color: #9a3412;
+            border: 1px solid #fdba74;
+        }
+    </style>
+</head>
+<body>
+    <div class="topbar">SAF - Execução</div>
+
+    <div class="menu">
+        <a href="/dashboard">Aprovações</a>
+        <a href="/nova-saf">Nova SAF</a>
+        <a href="/execucao">Execução</a>
+    </div>
+
+    <div class="container">
+        <div class="card">
+            <h1>Execuções</h1>
+            <div class="sub">Solicitações já liberadas para execução.</div>
+
+            {% if execucoes and execucoes|length > 0 %}
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID Execução</th>
+                            <th>Solicitação</th>
+                            <th>Código SAF</th>
+                            <th>Tipo</th>
+                            <th>Status</th>
+                            <th>Início</th>
+                            <th>Fim</th>
+                            <th>Ação</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in execucoes %}
+                        <tr>
+                            <td>{{ item.id }}</td>
+                            <td>{{ item.solicitacao_id }}</td>
+                            <td>{{ item.codigo_saf }}</td>
+                            <td>{{ item.tipo_solicitacao }}</td>
+                            <td>
+                                {% if item.status_execucao == 'PENDENTE' %}
+                                    <span class="badge pendente">{{ item.status_execucao }}</span>
+                                {% elif item.status_execucao == 'EM_ANDAMENTO' %}
+                                    <span class="badge andamento">{{ item.status_execucao }}</span>
+                                {% else %}
+                                    <span class="badge concluido">{{ item.status_execucao }}</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ item.data_inicio or '' }}</td>
+                            <td>{{ item.data_fim or '' }}</td>
+                            <td>
+                                {% if item.status_execucao == 'PENDENTE' %}
+                                    <button class="btn btn-iniciar"
+                                        onclick="iniciarExecucao({{ item.solicitacao_id }})">
+                                        Iniciar
+                                    </button>
+                                {% elif item.status_execucao == 'EM_ANDAMENTO' %}
+                                    <button class="btn btn-concluir"
+                                        onclick="concluirExecucao({{ item.solicitacao_id }})">
+                                        Concluir
+                                    </button>
+                                {% else %}
+                                    Finalizado
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <div class="empty">
+                    Nenhuma execução encontrada.
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <script>
+        async function iniciarExecucao(solicitacaoId) {
+            const response = await fetch(`/execucao/iniciar/${solicitacaoId}`, {
+                method: "POST"
+            });
+
+            if (response.ok) {
+                alert("Execução iniciada com sucesso.");
+                window.location.reload();
+            } else {
+                const erro = await response.text();
+                alert("Erro ao iniciar execução: " + erro);
+            }
+        }
+
+        async function concluirExecucao(solicitacaoId) {
+            const response = await fetch(`/execucao/concluir/${solicitacaoId}`, {
+                method: "POST"
+            });
+
+            if (response.ok) {
+                alert("Execução concluída com sucesso.");
+                window.location.reload();
+            } else {
+                const erro = await response.text();
+                alert("Erro ao concluir execução: " + erro);
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,13 @@
+"codigo_usuario","nome_usuario","perfil","telefone_whatsapp","email","ativo","recebe_criacao","recebe_aprovacao","recebe_reprovacao","recebe_observacao"
+"FIXO_ATENDENTE","Atendente","atendente","+5518998176101",NULL,True,True,True,True,True
+"FIXO_COORDENADOR","Coordenador","coordenador","+5518996253519",NULL,True,True,True,True,True
+"FIXO_COORDENADOR","Coordenador","coordenador","+5518996283519",NULL,True,True,True,True,True
+"FIXO_DIRETOR","Diretor","diretor","+5518996283519",NULL,True,True,True,True,True
+"FIXO_DIRETOR","Diretor","diretor","+5518996253519",NULL,True,True,True,True,True
+"FIXO_FINANCEIRO","Financeiro","financeiro","+5518996283519",NULL,True,True,True,True,True
+"FIXO_FINANCEIRO","Financeiro","financeiro","+5518996253519",NULL,True,True,True,True,True
+"FIXO_GERENTE","Gerente","gerente","+5518996253519",NULL,True,True,True,True,True
+"FIXO_GERENTE","Gerente","gerente","+5518996623513",NULL,True,True,True,True,True
+"FIXO_GERENTE","Gerente","gerente","+5518996283519",NULL,True,True,True,True,True
+"FIXO_SUPERVISOR","Supervisor","supervisor","+5518996253519",NULL,True,True,True,True,True
+"FIXO_SUPERVISOR_FINANCEIRO","Supervisor Financeiro","supervisor_financeiro","+5518996253519",NULL,True,True,True,True,True

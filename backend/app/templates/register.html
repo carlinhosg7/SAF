@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block title %}Registrar{% endblock %}
+{% block content %}
+<article>
+  <h3>Novo Usuário</h3>
+  <form method="post" action="/register">
+    <label>Nome<input type="text" name="name" required></label>
+    <label>Email<input type="email" name="email" required></label>
+    <label>Senha<input type="password" name="password" required></label>
+    <label>Perfil
+      <select name="role">
+        <option value="USER">USER</option>
+        <option value="MANAGER">MANAGER</option>
+        <option value="DIRECTOR">DIRECTOR</option>
+      </select>
+    </label>
+    <button type="submit">Criar</button>
+  </form>
+</article>
+{% endblock %}

@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% block title %}Ocorrência #{{ occ.id }}{% endblock %}
+{% block content %}
+<article>
+  <h3>#{{ occ.id }} — {{ occ.title }}</h3>
+  <p><strong>Status:</strong> <span class="badge">{{ occ.status }}</span></p>
+  <p>{{ occ.description }}</p>
+
+  <h5>Anexos</h5>
+  <ul>
+    {% for a in occ.attachments %}
+      <li><a href="/uploads/{{ a.path }}" target="_blank">{{ a.filename }}</a> ({{ a.mime_type }})</li>
+    {% endfor %}
+    {% if not occ.attachments %}<li><i>Sem anexos</i></li>{% endif %}
+  </ul>
+
+  <h5>Aprovações</h5>
+  <ul>
+    {% for ap in occ.approvals %}
+      <li>{{ ap.level }} — {{ ap.decision }} — {{ ap.comment }} — {{ ap.decided_at.strftime("%d/%m/%Y %H:%M") }}</li>
+    {% endfor %}
+    {% if not occ.approvals %}<li><i>Sem histórico</i></li>{% endif %}
+  </ul>
+
+  <footer style="display:flex; gap: .5rem; flex-wrap: wrap;">
+    {% if user.id == occ.created_by or user.role == "ADMIN" %}
+      {% if occ.status in ["RASCUNHO"] %}
+      <form method="post" action="/occurrence/{{ occ.id }}/submit"><button type="submit">Enviar para aprovação</button></form>
+      {% endif %}
+    {% endif %}
+
+    {% if user.role in ["MANAGER","ADMIN"] and occ.status == "ENVIADA" %}
+    <form method="post" action="/occurrence/{{ occ.id }}/approve_manager">
+      <input type="text" name="comment" placeholder="Comentário (opcional)">
+      <button type="submit">Aprovar (Gerência)</button>
+    </form>
+    <form method="post" action="/occurrence/{{ occ.id }}/reject_manager">
+      <input type="text" name="comment" placeholder="Motivo da reprovação">
+      <button type="submit" class="secondary">Reprovar (Gerência)</button>
+    </form>
+    {% endif %}
+
+    {% if user.role in ["DIRECTOR","ADMIN"] and occ.status == "APROVADA_GERENCIA" %}
+    <form method="post" action="/occurrence/{{ occ.id }}/approve_director">
+      <input type="text" name="comment" placeholder="Comentário (opcional)">
+      <button type="submit">Aprovar (Diretoria)</button>
+    </form>
+    <form method="post" action="/occurrence/{{ occ.id }}/reject_director">
+      <input type="text" name="comment" placeholder="Motivo da reprovação">
+      <button type="submit" class="secondary">Reprovar (Diretoria)</button>
+    </form>
+    {% endif %}
+  </footer>
+</article>
+{% endblock %}

@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SAF - Detalhes</title>
+    <style>
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f4f6f9;
+            color: #1f2937;
+        }
+
+        .topbar {
+            background: #0f172a;
+            color: #fff;
+            padding: 18px 24px;
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .menu {
+            background: #1e293b;
+            padding: 12px 24px;
+        }
+
+        .menu a {
+            color: #fff;
+            text-decoration: none;
+            margin-right: 20px;
+            font-weight: bold;
+        }
+
+        .container {
+            width: 95%;
+            margin: 24px auto;
+        }
+
+        .card {
+            background: #fff;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,.08);
+        }
+
+        h2 {
+            margin-top: 0;
+            margin-bottom: 16px;
+        }
+
+        .grid-info {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+        }
+
+        .info-box {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 12px;
+        }
+
+        .info-box strong {
+            display: block;
+            margin-bottom: 4px;
+            color: #334155;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: #fff;
+        }
+
+        td, th {
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+            text-align: left;
+            font-size: 14px;
+        }
+
+        th {
+            background: #e2e8f0;
+        }
+
+        .timeline {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 14px;
+        }
+
+        .timeline-item {
+            padding: 12px 16px;
+            border-radius: 10px;
+            color: #fff;
+            font-weight: bold;
+            font-size: 13px;
+            min-width: 180px;
+            text-align: center;
+        }
+
+        .status-ok {
+            background: #16a34a;
+        }
+
+        .status-pendente {
+            background: #f59e0b;
+        }
+
+        .status-em_andamento {
+            background: #2563eb;
+        }
+
+        .status-concluido {
+            background: #16a34a;
+        }
+
+        .status-reprovado {
+            background: #dc2626;
+        }
+
+        .status-outro {
+            background: #6b7280;
+        }
+
+        .empty {
+            padding: 16px;
+            border-radius: 10px;
+            background: #fff7ed;
+            color: #9a3412;
+            border: 1px solid #fdba74;
+        }
+
+        .voltar {
+            display: inline-block;
+            margin-top: 8px;
+            padding: 10px 14px;
+            background: #2563eb;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: bold;
+        }
+
+        .audit-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .audit-item {
+            border-left: 4px solid #2563eb;
+            background: #f8fafc;
+            padding: 12px 14px;
+            border-radius: 8px;
+        }
+
+        .audit-title {
+            font-weight: bold;
+            color: #0f172a;
+            margin-bottom: 4px;
+        }
+
+        .audit-meta {
+            color: #475569;
+            font-size: 13px;
+            margin-bottom: 4px;
+        }
+
+        .audit-detail {
+            color: #334155;
+            font-size: 14px;
+        }
+
+        @media (max-width: 768px) {
+            .grid-info {
+                grid-template-columns: 1fr;
+            }
+
+            .timeline-item {
+                min-width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="topbar">SAF - Detalhes</div>
+
+    <div class="menu">
+        <a href="/dashboard">Aprovações</a>
+        <a href="/nova-saf">Nova SAF</a>
+        <a href="/execucao">Execução</a>
+    </div>
+
+    <div class="container">
+
+        <div class="card">
+            <h2>Timeline da SAF</h2>
+
+            {% if timeline and timeline|length > 0 %}
+                <div class="timeline">
+                    {% for item in timeline %}
+                        {% set status_class = 'status-outro' %}
+
+                        {% if item.status == 'OK' %}
+                            {% set status_class = 'status-ok' %}
+                        {% elif item.status == 'PENDENTE' %}
+                            {% set status_class = 'status-pendente' %}
+                        {% elif item.status == 'EM_ANDAMENTO' %}
+                            {% set status_class = 'status-em_andamento' %}
+                        {% elif item.status == 'CONCLUIDO' %}
+                            {% set status_class = 'status-concluido' %}
+                        {% elif item.status == 'REPROVADO' %}
+                            {% set status_class = 'status-reprovado' %}
+                        {% endif %}
+
+                        <div class="timeline-item {{ status_class }}">
+                            {{ item.etapa }}<br>
+                            <small>{{ item.status }}</small>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="empty">Nenhuma informação de timeline disponível.</div>
+            {% endif %}
+        </div>
+
+        <div class="card">
+            <h2>Dados da SAF</h2>
+
+            {% if saf %}
+                <div class="grid-info">
+                    <div class="info-box">
+                        <strong>ID</strong>
+                        {{ saf.id }}
+                    </div>
+
+                    <div class="info-box">
+                        <strong>Código SAF</strong>
+                        {{ saf.codigo_saf }}
+                    </div>
+
+                    <div class="info-box">
+                        <strong>Tipo</strong>
+                        {{ saf.tipo_solicitacao }}
+                    </div>
+
+                    <div class="info-box">
+                        <strong>Status Atual</strong>
+                        {{ saf.status_atual }}
+                    </div>
+
+                    <div class="info-box">
+                        <strong>Supervisor</strong>
+                        {{ saf.supervisor }}
+                    </div>
+
+                    <div class="info-box">
+                        <strong>Atendente</strong>
+                        {{ saf.atendente }}
+                    </div>
+                </div>
+            {% else %}
+                <div class="empty">SAF não encontrada.</div>
+            {% endif %}
+        </div>
+
+        <div class="card">
+            <h2>Dados Específicos</h2>
+
+            {% if dados %}
+                <div class="grid-info">
+                    {% for key, value in dados.items() %}
+                        <div class="info-box">
+                            <strong>{{ key }}</strong>
+                            {{ value }}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="empty">Sem dados específicos.</div>
+            {% endif %}
+        </div>
+
+        <div class="card">
+            <h2>Aprovações</h2>
+
+            {% if aprovacoes and aprovacoes|length > 0 %}
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Nível</th>
+                            <th>Status</th>
+                            <th>Usuário</th>
+                            <th>Assinante</th>
+                            <th>Código</th>
+                            <th>Data</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for a in aprovacoes %}
+                        <tr>
+                            <td>{{ a.ordem_nivel }}</td>
+                            <td>{{ a.status_aprovacao }}</td>
+                            <td>{{ a.usuario_id }}</td>
+                            <td>{{ a.nome_assinante }}</td>
+                            <td>{{ a.codigo_assinatura }}</td>
+                            <td>{{ a.data_assinatura }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <div class="empty">Nenhuma aprovação registrada.</div>
+            {% endif %}
+        </div>
+
+        <div class="card">
+            <h2>Execução</h2>
+
+            {% if execucao %}
+                <div class="grid-info">
+                    <div class="info-box">
+                        <strong>Status</strong>
+                        {{ execucao.status_execucao }}
+                    </div>
+
+                    <div class="info-box">
+                        <strong>Início</strong>
+                        {{ execucao.data_inicio }}
+                    </div>
+
+                    <div class="info-box">
+                        <strong>Fim</strong>
+                        {{ execucao.data_fim }}
+                    </div>
+
+                    <div class="info-box">
+                        <strong>Observação</strong>
+                        {{ execucao.observacao_execucao }}
+                    </div>
+                </div>
+            {% else %}
+                <div class="empty">Execução ainda não iniciada.</div>
+            {% endif %}
+        </div>
+
+        <div class="card">
+            <h2>Histórico de Auditoria</h2>
+
+            {% if auditoria and auditoria|length > 0 %}
+                <div class="audit-list">
+                    {% for item in auditoria %}
+                        <div class="audit-item">
+                            <div class="audit-title">{{ item.acao }}</div>
+                            <div class="audit-meta">
+                                {{ item.data_hora }} |
+                                Usuário: {{ item.usuario_id }} |
+                                Nome: {{ item.nome_usuario or '-' }} |
+                                Nível: {{ item.nivel_usuario or '-' }}
+                            </div>
+                            <div class="audit-detail">
+                                {{ item.detalhes or 'Sem detalhes.' }}
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="empty">Nenhum evento de auditoria encontrado.</div>
+            {% endif %}
+        </div>
+
+        <a href="/dashboard" class="voltar">Voltar para o Dashboard</a>
+
+    </div>
+
+</body>
+</html>

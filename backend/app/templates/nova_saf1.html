@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SAF - Nova Solicitação</title>
+    <style>
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f4f6f9;
+            color: #1f2937;
+        }
+
+        .topbar {
+            background: #0f172a;
+            color: #fff;
+            padding: 18px 24px;
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .menu {
+            background: #1e293b;
+            padding: 12px 24px;
+        }
+
+        .menu a {
+            color: #fff;
+            text-decoration: none;
+            margin-right: 20px;
+            font-weight: bold;
+        }
+
+        .container {
+            width: 95%;
+            margin: 24px auto;
+        }
+
+        .card {
+            background: #fff;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 2px 10px rgba(0,0,0,.08);
+            max-width: 900px;
+        }
+
+        h1 {
+            margin-top: 0;
+            margin-bottom: 16px;
+        }
+
+        .sub {
+            margin-bottom: 20px;
+            color: #475569;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .field {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .field.full {
+            grid-column: 1 / -1;
+        }
+
+        label {
+            margin-bottom: 6px;
+            font-weight: bold;
+            color: #334155;
+        }
+
+        input, select {
+            padding: 12px;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        .btn {
+            margin-top: 20px;
+            border: none;
+            border-radius: 8px;
+            padding: 12px 18px;
+            cursor: pointer;
+            font-weight: bold;
+            color: #fff;
+            background: #2563eb;
+        }
+
+        .secao-extra {
+            margin-top: 24px;
+            padding-top: 20px;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .debug {
+            margin-top: 16px;
+            background: #eef2ff;
+            color: #312e81;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 13px;
+        }
+    </style>
+</head>
+<body>
+    <div class="topbar">SAF - Nova Solicitação</div>
+
+    <div class="menu">
+        <a href="/dashboard">Aprovações</a>
+        <a href="/nova-saf">Nova SAF</a>
+        <a href="/execucao">Execução</a>
+    </div>
+
+    <div class="container">
+        <div class="card">
+            <h1>Criar Nova SAF</h1>
+            <div class="sub">Preencha os dados básicos para abrir uma nova solicitação.</div>
+
+            <form id="formNovaSaf">
+                <div class="grid">
+                    <div class="field">
+                        <label for="codigo_saf">Código SAF</label>
+                        <input type="text" id="codigo_saf" value="{{ codigo_sugerido }}" required>
+                    </div>
+
+                    <div class="field">
+                        <label for="tipo">Tipo</label>
+                        <select id="tipo" required>
+                            <option value="INATIVAR_CLIENTE">Inativar Cliente</option>
+                            <option value="ALTERACAO_DC">Alteração DC</option>
+                            <option value="RETORNO_MERCADORIA">Retorno Mercadoria</option>
+                        </select>
+                    </div>
+
+                    <div class="field">
+                        <label for="supervisor">Supervisor</label>
+                        <input type="text" id="supervisor" value="SUP01" required>
+                    </div>
+
+                    <div class="field">
+                        <label for="atendente">Atendente</label>
+                        <input type="text" id="atendente" value="ATD01" required>
+                    </div>
+
+                    <div class="field full">
+                        <label for="usuario_id">Usuário Criador ID</label>
+                        <input type="number" id="usuario_id" value="1" required>
+                    </div>
+                </div>
+
+                <div class="secao-extra">
+                    <h3>Dados específicos</h3>
+                    <div id="camposExtras"></div>
+                </div>
+
+                <button type="submit" class="btn">Criar SAF</button>
+            </form>
+
+            <div class="debug" id="debugBox">Tela carregada.</div>
+        </div>
+    </div>
+
+    <script>
+        function alterarCampos() {
+            const tipo = document.getElementById("tipo").value;
+            const container = document.getElementById("camposExtras");
+
+            let html = "";
+
+            if (tipo === "INATIVAR_CLIENTE") {
+                html = `
+                    <div class="grid">
+                        <div class="field">
+                            <label for="cliente_codigo">Código Cliente</label>
+                            <input type="text" id="cliente_codigo">
+                        </div>
+                        <div class="field">
+                            <label for="motivo">Motivo</label>
+                            <input type="text" id="motivo">
+                        </div>
+                    </div>
+                `;
+            } else if (tipo === "ALTERACAO_DC") {
+                html = `
+                    <div class="grid">
+                        <div class="field">
+                            <label for="dc_atual">DC Atual</label>
+                            <input type="text" id="dc_atual">
+                        </div>
+                        <div class="field">
+                            <label for="dc_novo">Novo DC</label>
+                            <input type="text" id="dc_novo">
+                        </div>
+                    </div>
+                `;
+            } else if (tipo === "RETORNO_MERCADORIA") {
+                html = `
+                    <div class="grid">
+                        <div class="field">
+                            <label for="nota_fiscal">Nota Fiscal</label>
+                            <input type="text" id="nota_fiscal">
+                        </div>
+                        <div class="field">
+                            <label for="motivo_retorno">Motivo Retorno</label>
+                            <input type="text" id="motivo_retorno">
+                        </div>
+                    </div>
+                `;
+            }
+
+            container.innerHTML = html;
+            document.getElementById("debugBox").innerText = "Tipo selecionado: " + tipo;
+        }
+
+        document.getElementById("tipo").addEventListener("change", alterarCampos);
+
+        document.getElementById("formNovaSaf").addEventListener("submit", async function(e) {
+            e.preventDefault();
+
+            const tipo = document.getElementById("tipo").value;
+            let dadosExtras = {};
+
+            if (tipo === "INATIVAR_CLIENTE") {
+                dadosExtras = {
+                    cliente_codigo: document.getElementById("cliente_codigo") ? document.getElementById("cliente_codigo").value : "",
+                    motivo: document.getElementById("motivo") ? document.getElementById("motivo").value : ""
+                };
+            } else if (tipo === "ALTERACAO_DC") {
+                dadosExtras = {
+                    dc_atual: document.getElementById("dc_atual") ? document.getElementById("dc_atual").value : "",
+                    dc_novo: document.getElementById("dc_novo") ? document.getElementById("dc_novo").value : ""
+                };
+            } else if (tipo === "RETORNO_MERCADORIA") {
+                dadosExtras = {
+                    nota_fiscal: document.getElementById("nota_fiscal") ? document.getElementById("nota_fiscal").value : "",
+                    motivo_retorno: document.getElementById("motivo_retorno") ? document.getElementById("motivo_retorno").value : ""
+                };
+            }
+
+            const payload = {
+                codigo_saf: document.getElementById("codigo_saf").value,
+                tipo: tipo,
+                supervisor: document.getElementById("supervisor").value,
+                atendente: document.getElementById("atendente").value,
+                usuario_id: parseInt(document.getElementById("usuario_id").value),
+                dados: dadosExtras
+            };
+
+            const response = await fetch("/saf/criar", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(payload)
+            });
+
+            if (response.ok) {
+                alert("SAF criada com sucesso.");
+                window.location.href = "/dashboard";
+            } else {
+                const erro = await response.text();
+                alert("Erro ao criar SAF: " + erro);
+            }
+        });
+
+        alterarCampos();
+    </script>
+</body>
+</html>
