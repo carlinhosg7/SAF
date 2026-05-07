@@ -3787,7 +3787,6 @@ def home():
     return redirect("/login")
 
 
-
 @app.route("/login", methods=["GET", "POST"])
 def login():
     erro = None
@@ -3815,7 +3814,7 @@ def login():
 
                 if user:
                     user_id, cod, nome, senha_hash, nivel, regional, ativo = user
-                    # ✅ CORRETO
+
                     if ativo is False:
                         erro = "Usuário inativo."
                     elif senha_hash and verificar_senha(senha, senha_hash):
@@ -3833,51 +3832,51 @@ def login():
                 erro = f"Erro ao conectar no banco: {e}"
 
     return render_template_string("""
-    <!DOCTYPE html>
-    <html lang="pt-BR">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>SAF | Login</title>
-        <link rel="icon" type="image/x-icon" href="/logo-kidy-icon">
-        <style>
-            * { box-sizing: border-box; margin: 0; padding: 0; font-family: Arial, Helvetica, sans-serif; }
-            body { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 24px; background: linear-gradient(135deg, #f97316 0%, #fb923c 58%, #fdba74 100%); color: #111827; }
-            .box { width: 100%; max-width: 460px; background: rgba(255,255,255,0.98); border: 2px solid rgba(249,115,22,0.18); border-radius: 24px; padding: 34px; box-shadow: 0 24px 60px rgba(154,52,18,0.18); }
-            .logo { width: 180px; max-width: 100%; display: block; margin: 0 auto 20px auto; }
-            h1 { font-size: 30px; margin-bottom: 8px; color: #111827; text-align: center; }
-            p { color: #374151; margin-bottom: 22px; font-size: 14px; text-align: center; }
-            label { display: block; margin-bottom: 8px; margin-top: 14px; color: #111827; font-size: 14px; font-weight: 700; }
-            input { width: 100%; height: 48px; border-radius: 14px; border: 1px solid #d1d5db; background: #ffffff; color: #111827; padding: 0 14px; outline: none; font-size: 15px; }
-            input::placeholder { color: #9ca3af; }
-            button { width: 100%; height: 50px; margin-top: 22px; border: none; border-radius: 14px; background: #f97316; color: #ffffff; font-size: 15px; font-weight: 800; cursor: pointer; box-shadow: 0 12px 24px rgba(249,115,22,0.20); }
-            button:hover { background: #ea580c; }
-            .erro { margin-top: 14px; background: #fef2f2; border: 1px solid #fecaca; color: #dc2626; border-radius: 12px; padding: 12px 14px; font-size: 14px; }
-        </style>
-    </head>
-    <body>
-        <div class="box">
-            <img class="logo" src="/logo-kidy" alt="Logo Kidy">
-            <h1>Entrar no SAF</h1>
-            <p>Acesse com seu usuário ou nome e senha.</p>
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SAF | Login</title>
+    <link rel="icon" type="image/x-icon" href="/logo-kidy-icon">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: Arial, Helvetica, sans-serif; }
+        body { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 24px; background: linear-gradient(135deg, #f97316 0%, #fb923c 58%, #fdba74 100%); color: #111827; }
+        .box { width: 100%; max-width: 460px; background: rgba(255,255,255,0.98); border: 2px solid rgba(249,115,22,0.18); border-radius: 24px; padding: 34px; box-shadow: 0 24px 60px rgba(154,52,18,0.18); }
+        .logo { width: 180px; max-width: 100%; display: block; margin: 0 auto 20px auto; }
+        h1 { font-size: 30px; margin-bottom: 8px; color: #111827; text-align: center; }
+        p { color: #374151; margin-bottom: 22px; font-size: 14px; text-align: center; }
+        label { display: block; margin-bottom: 8px; margin-top: 14px; color: #111827; font-size: 14px; font-weight: 700; }
+        input { width: 100%; height: 48px; border-radius: 14px; border: 1px solid #d1d5db; background: #ffffff; color: #111827; padding: 0 14px; outline: none; font-size: 15px; }
+        input::placeholder { color: #9ca3af; }
+        button { width: 100%; height: 50px; margin-top: 22px; border: none; border-radius: 14px; background: #f97316; color: #ffffff; font-size: 15px; font-weight: 800; cursor: pointer; box-shadow: 0 12px 24px rgba(249,115,22,0.20); }
+        button:hover { background: #ea580c; }
+        .erro { margin-top: 14px; background: #fef2f2; border: 1px solid #fecaca; color: #dc2626; border-radius: 12px; padding: 12px 14px; font-size: 14px; }
+    </style>
+</head>
+<body>
+    <div class="box">
+        <img class="logo" src="/logo-kidy" alt="Logo Kidy" onerror="this.style.display='none'">
+        <h1>Entrar no SAF</h1>
+        <p>Acesse com seu usuário ou nome e senha.</p>
 
-            <form method="POST">
-                <label for="codigo">Usuário</label>
-                <input id="codigo" name="codigo" type="text" placeholder="Ex.: ADM001 ou jeane" required>
+        <form method="POST">
+            <label for="codigo">Usuário</label>
+            <input id="codigo" name="codigo" type="text" placeholder="Ex.: ADM001 ou jeane" required>
 
-                <label for="senha">Senha</label>
-                <input id="senha" name="senha" type="password" placeholder="Digite sua senha" required>
+            <label for="senha">Senha</label>
+            <input id="senha" name="senha" type="password" placeholder="Digite sua senha" required>
 
-                <button type="submit">Entrar</button>
+            <button type="submit">Entrar</button>
 
-                {% if erro %}
-                    <div class="erro">{{ erro }}</div>
-                {% endif %}
-            </form>
-        </div>
-    </body>
-    </html>
-    """, erro=erro)
+            {% if erro %}
+                <div class="erro">{{ erro }}</div>
+            {% endif %}
+        </form>
+    </div>
+</body>
+</html>
+""", erro=erro)
 
 
 @app.route("/logout")
