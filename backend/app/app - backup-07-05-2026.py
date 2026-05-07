@@ -70,21 +70,14 @@ DB_CONFIG = {
     "port": int(os.getenv("DB_PORT", "5432")),
 }
 
-BASE_DIR = Path(__file__).resolve().parent
-ARQUIVOS_DIR = Path(os.getenv("SAF_ARQUIVOS_DIR", str(BASE_DIR / "Arquivos")))
-
-ARQ_CLIENTES = ARQUIVOS_DIR / "CLIENTES.xlsx"
-ARQ_PEDIDOS = ARQUIVOS_DIR / "PEDIDOS.xlsx"
-ARQ_TITULOS = ARQUIVOS_DIR / "TITULOS.xlsx"
-ARQ_TITULOS2 = ARQUIVOS_DIR / "TITULOS2.xlsx"
-
-ARQ_LOGO_KIDY = ARQUIVOS_DIR / "logo_kidy.png"
-ARQ_LOGO_KIDY_ICON = ARQUIVOS_DIR / "logo_kidy_icon.ico"
-
-PASTA_ANEXOS_SAF = Path(os.getenv("SAF_DOCS_DIR", str(BASE_DIR / "doc")))
-
+ARQ_CLIENTES = r"D:\SAF\Arquivos\CLIENTES.xlsx"
+ARQ_PEDIDOS = r"D:\SAF\Arquivos\PEDIDOS.xlsx"
+ARQ_TITULOS = r"D:\SAF\Arquivos\TITULOS.xlsx"
+ARQ_TITULOS2 = r"D:\SAF\Arquivos\TITULOS2.xlsx"
+ARQ_LOGO_KIDY = r"D:\SAF\Arquivos\logo_kidy.png"
+ARQ_LOGO_KIDY_ICON = r"D:\SAF\Arquivos\logo_kidy_icon.ico"
+PASTA_ANEXOS_SAF = Path(os.getenv("SAF_DOCS_DIR", r"D:\SAF\doc"))
 MAX_ANEXO_MB = int(os.getenv("SAF_MAX_ANEXO_MB", "20"))
-
 EXTENSOES_PERMITIDAS_ANEXO = {
     ".png", ".jpg", ".jpeg", ".webp", ".gif", ".bmp", ".svg",
     ".pdf",
