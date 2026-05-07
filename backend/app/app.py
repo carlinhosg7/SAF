@@ -22,12 +22,11 @@ import requests
 from html import escape
 from psycopg2.extras import execute_batch, RealDictCursor
 from flask import Flask, request, redirect, session, render_template_string, abort, jsonify, send_file, url_for, flash, get_flashed_messages
-from saf_tipos.inativar_cliente import render_nova_saf_inativar_cliente
-from saf_tipos.comum import buscar_representante_cache, buscar_clientes_por_representante
-from saf_tipos.alterar_portador_devolucao import render_nova_saf_alterar_portador_devolucao
-from saf_tipos.prorrogar_sem_juros import render_nova_saf_prorrogar_sem_juros
-from saf_tipos.prorrogar_com_juros import render_nova_saf_prorrogar_com_juros
-
+from .saf_tipos.inativar_cliente import render_nova_saf_inativar_cliente
+from .saf_tipos.comum import buscar_representante_cache, buscar_clientes_por_representante
+from .saf_tipos.alterar_portador_devolucao import render_nova_saf_alterar_portador_devolucao
+from .saf_tipos.prorrogar_sem_juros import render_nova_saf_prorrogar_sem_juros
+from .saf_tipos.prorrogar_com_juros import render_nova_saf_prorrogar_com_juros
 
 def carregar_arquivo_env_local():
     """
