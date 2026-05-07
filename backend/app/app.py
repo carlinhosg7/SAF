@@ -3260,13 +3260,21 @@ def startup_sync():
 
     try:
         garantir_tabelas_saf()
+
+        # No Render, não rode carga pesada no primeiro request.
+        if os.getenv("RENDER"):
+            BASES_JA_VERIFICADAS = True
+            return
+
         garantir_destinatarios_whatsapp_padrao()
         sincronizar_bases_automaticamente()
+
         BASES_JA_VERIFICADAS = True
+
     except Exception as e:
-        BASES_JA_VERIFICADAS = False
+        BASES_JA_VERIFICADAS = True
         print(f"[SAF] Erro ao sincronizar bases: {repr(e)}")
-        raise
+        return
 
 
 # =========================
